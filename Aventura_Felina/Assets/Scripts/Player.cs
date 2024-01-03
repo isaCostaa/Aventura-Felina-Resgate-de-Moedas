@@ -4,23 +4,37 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public float velocity = 5f; // Velocidade de movimento do personagem
+    public float jump = 10f; // Força do pulo
+    private Rigidbody2D rb;
+    private bool ground; // Verifica se o personagem está no chão
+
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        MovePlayer();
-    }
+        if (Input.GetButtonDown("Jump"))
+        {
+            rb.velocity = Vector2.up * 12;
+        }
 
 
-    void MovePlayer()
-    {
-        float horizontalMoviment = Input.GetAxis("Horizontal");
-        //Debug.Log(horizontalMoviment);
-       transform.position += new Vector3(horizontalMoviment,0,0); 
+        // Verifica se o personagem está no chão
+        ground = Physics2D.OverlapCircle(transform.position, 0.2f, LayerMask.GetMask("ground"));
+
+        // Movimentação horizontal
+        float movimentHorizontal = Input.GetAxis("Horizontal");
+        Vector2 moviment = new Vector2(movimentHorizontal * velocity, rb.velocity.y);
+        rb.velocity = moviment;
+
+        // Pulo
+        if (ground && Input.GetKeyDown(KeyCode.W))
+        {
+            rb.AddForce(Vector2.up * jump, ForceMode2D.Impulse);
+        }
+
     }
 }
